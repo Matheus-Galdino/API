@@ -1,6 +1,6 @@
 ﻿using API.Models;
+using API.Services;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
 using System.Collections.Generic;
 
 namespace API.Controllers
@@ -9,14 +9,58 @@ namespace API.Controllers
     [ApiController]
     public class PhotosController : ControllerBase
     {
-        MongoClient dbClient = new MongoClient("mongodb+srv://dbAdmin:dbAdminMaster@my-unsplash.f00v4.mongodb.net/photos?retryWrites=true&w=majority");
+        private readonly PhotoService _photoService;
+
+        public PhotosController(PhotoService photoService) => _photoService = photoService;
 
         [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            var dbList = dbClient.ListDatabaseNames().ToList();
+        public ActionResult<List<Photo>> Get() =>
+            _photoService.Get();
 
-            return dbList;
+        [HttpGet("{id:length(24)}", Name = "GetPhoto")]
+        public ActionResult<Photo> Get(string id)
+        {
+            var Photo = _photoService.Get(id);
+
+            if (Photo is null)
+                return NotFound();
+
+            return Photo;
+        }
+
+        [HttpPost]
+        public ActionResult<Photo> Create(Photo Photo)
+        {
+            _photoService.Create(Photo);
+
+            return CreatedAtRoute("GetPhoto", new { id = Photo.Id.ToString() }, Photo);
+        }
+
+        [HttpPut("{id:length(24)}")]
+        public IActionResult Update(string id, Photo PhotoIn)
+        {
+            var Photo = _photoService.Get(id);
+
+            if (Photo is null)
+                return NotFound();
+
+
+            _photoService.Update(id, PhotoIn);
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id:length(24)}")]
+        public IActionResult Delete(string id)
+        {
+            var Photo = _photoService.Get(id);
+
+            if (Photo is null)            
+                return NotFound();            
+
+            _photoService.Remove(Photo.Id);
+
+            return NoContent();
         }
     }
 }
