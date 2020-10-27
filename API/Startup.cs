@@ -11,6 +11,8 @@ namespace API
 {
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -30,6 +32,15 @@ namespace API
 
             services.AddSingleton<PhotoService>();
 
+            services.AddCors(Options =>
+            {
+                Options.AddPolicy(name: MyAllowSpecificOrigins,
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost:8080");                        
+                    });
+            });
+
             services.AddControllers();
         }
 
@@ -44,6 +55,8 @@ namespace API
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseAuthorization();
 
