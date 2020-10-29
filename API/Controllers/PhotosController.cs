@@ -17,10 +17,10 @@ namespace API.Controllers
         public ActionResult<List<Photo>> Get() =>
             _photoService.Get();
 
-        [HttpGet("{id:length(24)}", Name = "GetPhoto")]
-        public ActionResult<Photo> Get(string id)
+        [HttpGet("{label}", Name = "FilterPhotos")]
+        public ActionResult<List<Photo>> Get(string label)
         {
-            var Photo = _photoService.Get(id);
+            var Photo = _photoService.GetByLabel(label);
 
             if (Photo is null)
                 return NotFound();
