@@ -37,11 +37,11 @@ namespace API
                 Options.AddPolicy(name: MyAllowSpecificOrigins,
                     builder =>
                     {
-                        builder.WithOrigins("http://localhost:8080");                        
+                        builder.WithOrigins("http://localhost:8080").AllowAnyHeader().AllowAnyMethod();
                     });
             });
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
