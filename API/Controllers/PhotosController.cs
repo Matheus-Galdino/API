@@ -55,8 +55,8 @@ namespace API.Controllers
         {
             var Photo = _photoService.Get(id);
 
-            if (Photo is null)            
-                return NotFound();            
+            if (Photo is null)
+                return NotFound();
 
             _photoService.Remove(Photo.Id);
 
